@@ -4,16 +4,19 @@ from mainDir.neuralnetwrok import NeuronLayer
 from mainDir.neuralnetwrok import Weights
 import sqlite3
 
-learningRate = 0.5
+learningRate = 0.25
 databaseName = "NNdb.db"
 class NeuralNetwork:
 
     # region 1. Init Object
 
-    def __init__(self, numberOfLayers, layersSize, biases):
+    def __init__(self, numberOfLayers, layersSize, biases = None):
         self.__numberOfLayers = numberOfLayers
         self.__layersSize = layersSize
-        self.__biases = biases
+        if biases == None:
+            self.__biases = [0] * numberOfLayers
+        else:
+            self.__biases = biases
 
         self.__conn = sqlite3.connect(databaseName)
         self.__weights = Weights.Weights(databaseName)
@@ -198,6 +201,13 @@ class NeuralNetwork:
         id2 = max(nId1, nId2)
         self.__weights.setWeightByTwoNeuronId(self.__conn, id1, id2, newWeight)
 
+
+    # endregion
+
+    # region 10. Close the connection to database
+
+    def closeConnection(self):
+        self.__conn.close()
 
     # endregion
 

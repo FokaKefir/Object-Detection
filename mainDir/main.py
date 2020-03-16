@@ -14,8 +14,7 @@ def training(neuralNetwork):
 def main():
     numberOfLayers = 3
     layersSize = [2, 2, 2]
-    biases = [0, 0.35, 0.60]
-    neuralNetwork = NeuralNetwork.NeuralNetwork(numberOfLayers, layersSize, biases)
+    neuralNetwork = NeuralNetwork.NeuralNetwork(numberOfLayers, layersSize)
     neuralNetwork.creatNeuralNetwork()
     neuralNetwork.creatingWeights()
     neuralNetwork.addingOutputNeuronsName(["false", "true"])
