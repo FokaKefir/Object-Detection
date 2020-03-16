@@ -16,18 +16,21 @@ class Picture:
     # region 2. Crop the image
 
     def cropImg(self, xmin, ymin, xmax, ymax):
-        row = xmax - xmin + 1
-        col = ymin - ymax + 1
-        self.__newImg = [[0] * col] * row
-        for i in range(xmin, xmax+1):
-            for j in range(ymin, ymax+1):
-                self.__newImg[i - xmin][j - ymin] = self.__img[i][j]
+        self.__newImg = self.__img[ymin:ymax, xmin:xmax]
+
+    def resizeImg(self, w, h):
+        dim = (w, h)
+        self.__newImg = cv2.resize(self.__newImg, dim)
+
 
     def calculatingInput(self):
         inputList = []
 
         for row in self.__newImg:
-            inputList.extend(row)
+            nRow = []
+            for i in range(len(row)):
+                nRow.append(float(row[i] / 255))
+            inputList.extend(nRow)
 
         return inputList
 

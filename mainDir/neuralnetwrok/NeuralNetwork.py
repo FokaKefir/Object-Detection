@@ -59,6 +59,7 @@ class NeuralNetwork:
         self.__weights.createTable(self.__conn)
         if self.__weights.getRowsSize(self.__conn) == 0:
             self.addingWeights()
+            print("The values is saved in database")
 
     # endregion
 
