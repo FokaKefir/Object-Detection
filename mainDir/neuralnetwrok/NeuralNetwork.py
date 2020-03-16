@@ -1,11 +1,11 @@
 from math import e
 import random
-from main.neuralnetwrok import NeuronLayer
-from main.neuralnetwrok import Weights
-
+from mainDir.neuralnetwrok import NeuronLayer
+from mainDir.neuralnetwrok import Weights
+import sqlite3
 
 learningRate = 0.5
-databaseName = "NeuralNetwork_database"
+databaseName = "NNdb.db"
 class NeuralNetwork:
 
     # region 1. Init Object
@@ -15,8 +15,8 @@ class NeuralNetwork:
         self.__layersSize = layersSize
         self.__biases = biases
 
+        self.__conn = sqlite3.connect(databaseName)
         self.__weights = Weights.Weights(databaseName)
-        self.__weights.createDatabase()
 
     # endregion
 
@@ -36,8 +36,8 @@ class NeuralNetwork:
 
     def creatingWeights(self):
 
-        self.__weights.createTable()
-        if self.__weights.getRowsSize() == 0:
+        self.__weights.createTable(self.__conn)
+        if self.__weights.getRowsSize(self.__conn) == 0:
             self.addingWeights()
 
     # endregion
@@ -47,7 +47,7 @@ class NeuralNetwork:
     def addingWeightBetweenTwoNeuron(self, nId1, nId2, weight):
         id1 = min(nId1, nId2)
         id2 = max(nId1, nId2)
-        self.__weights.insertToTheTable(id1, id2, weight)
+        self.__weights.insertToTheTable(self.__conn, id1, id2, weight)
 
     def addingWeightsBetweenTwoLayer(self, layer1, layer2):
         neurons1 = layer1.getNeurons()
@@ -191,21 +191,17 @@ class NeuralNetwork:
         id1 = min(nId1, nId2)
         id2 = max(nId1, nId2)
 
-        return float(self.__weights.getWeightByTwoNeuronId(id1, id2))
+        return float(self.__weights.getWeightByTwoNeuronId(self.__conn, id1, id2))
 
     def setWeightBetweenTwoNeuron(self, nId1, nId2, newWeight):
         id1 = min(nId1, nId2)
         id2 = max(nId1, nId2)
-        self.__weights.setWeightByTwoNeuronId(id1, id2, newWeight)
+        self.__weights.setWeightByTwoNeuronId(self.__conn, id1, id2, newWeight)
 
 
     # endregion
 
     # region 10. Prints
-
-    def printWeights(self):
-        for weight in self.__weights:
-            print(weight)
 
     def printError(self):
         print(self.__totalError)

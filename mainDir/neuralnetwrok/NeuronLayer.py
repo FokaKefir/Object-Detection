@@ -1,4 +1,4 @@
-from main.neuralnetwrok import Neuron
+from mainDir.neuralnetwrok import Neuron
 
 
 class NeuronLayer:
