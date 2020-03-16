@@ -3,22 +3,39 @@ import random
 from mainDir.neuralnetwrok import NeuronLayer
 from mainDir.neuralnetwrok import Weights
 import sqlite3
+from sqlite3 import Error
 
 learningRate = 0.25
 databaseName = "NNdb.db"
+directory = "databases/"
 class NeuralNetwork:
 
     # region 1. Init Object
 
-    def __init__(self, numberOfLayers, layersSize, biases = None):
-        self.__numberOfLayers = numberOfLayers
-        self.__layersSize = layersSize
-        if biases == None:
-            self.__biases = [0] * numberOfLayers
+    def __init__(self, numberOfLayers=None, layersSize=None, biases=None):
+        self.__conn = sqlite3.connect(directory + databaseName)
+        self.createTheTable()
+
+        if numberOfLayers is None:
+            if layersSize is None:
+                self.readFromTable()
+            else:
+                self.__layersSize = layersSize
+                self.__numberOfLayers = len(layersSize)
+
+        else:
+            self.__numberOfLayers = numberOfLayers
+            self.__layersSize = layersSize
+
+
+        if self.getTableSize() == 0:
+            self.saveToTable(self.__layersSize)
+
+        if biases is None:
+            self.__biases = [0] * self.__numberOfLayers
         else:
             self.__biases = biases
 
-        self.__conn = sqlite3.connect(databaseName)
         self.__weights = Weights.Weights(databaseName)
 
     # endregion
@@ -205,6 +222,51 @@ class NeuralNetwork:
     # endregion
 
     # region 10. Close the connection to database
+
+    def getTableSize(self):
+        cursor = self.__conn.cursor()
+        try:
+            cursor.execute("SELECT * FROM layers")
+            return len(cursor.fetchall())
+
+        except Error as error:
+            return 0
+
+    def saveToTable(self, layersSize):
+        cursor = self.__conn.cursor()
+        index = 0
+        for layerSize in layersSize:
+            newRow = (index, layerSize)
+            cursor.execute("INSERT INTO layers VALUES (?, ?)", newRow)
+            self.__conn.commit()
+            index += 1
+
+    def readFromTable(self):
+        if self.getTableSize() == 0:
+            print("Error: the table is empty")
+            return
+
+        cursor = self.__conn.cursor()
+
+        cursor.execute("SELECT * FROM layers")
+
+        layers = cursor.fetchall()
+        self.__numberOfLayers = len(layers)
+
+        self.__layersSize = [0] * self.__numberOfLayers
+        for layer in layers:
+            id = layer[0]
+            layerSize = layer[1]
+            self.__layersSize[id] = layerSize
+
+
+
+    def createTheTable(self):
+        cursor = self.__conn.cursor()
+        try:
+            cursor.execute('''CREATE TABLE layers (id int, size int)''')
+        except Error as error:
+            print(error)
 
     def closeConnection(self):
         self.__conn.close()
