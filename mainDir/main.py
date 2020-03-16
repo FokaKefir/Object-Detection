@@ -11,6 +11,8 @@ def training(neuralNetwork):
 
         time.sleep(0.1)
 
+
+
 def main():
     numberOfLayers = 3
     layersSize = [2, 2, 2]
