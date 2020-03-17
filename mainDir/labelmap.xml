@@ -1,5 +1,10 @@
 <labelmap>
     <numberOfItems>2</numberOfItems>
+    <modelName>model</modelName>
+    <image>
+        <width>10</width>
+        <height>10</height>
+    </image>
     <item>
         <name>banana</name>
     </item>

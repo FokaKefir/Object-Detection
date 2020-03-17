@@ -61,8 +61,6 @@ class NeuralNetwork:
             self.addingWeights()
             self.__weights.saveAllWeights()
             self.__weights.buildIndexMatrix(self.getLayersSizeSim())
-
-            print("The values is saved in database")
         else:
             self.__weights.buildIndexMatrix(self.getLayersSizeSim())
 

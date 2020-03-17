@@ -3,8 +3,6 @@ import csv
 import xml.etree.ElementTree as ET
 import cv2
 from mainDir.picture import Picture
-imgWidth = 20
-imgHeight = 20
 
 
 def readingInputFromXML(name):
@@ -13,10 +11,16 @@ def readingInputFromXML(name):
     tree = ET.parse(name)
     root = tree.getroot()
 
+    modelName = str(root.findtext("modelName"))
+
+    imageInfo = root.find("image")
+    width = int(imageInfo[0].text)
+    height = int(imageInfo[1].text)
+
     for member in root.findall("item"):
         items.append(str(member[0].text))
 
-    return items
+    return (items, modelName, height, width)
 
 
 def getInformationsFromCSV():
@@ -32,7 +36,7 @@ def getInformationsFromCSV():
     return info
 
 
-def calculatingInput(info):
+def calculatingInput(info, imgWidth, imgHeight):
     dir = "images/train/"
     imgName = str(info[0])
     w = int(info[1])
@@ -49,11 +53,12 @@ def calculatingInput(info):
     return (iList, objectName)
 
 
-def training(items):
+def training():
+    items, modelName, imgHeight, imgWidth = readingInputFromXML("labelmap.xml")
     inputLayer = imgHeight * imgWidth
     layersSize = [inputLayer, 5, 5, 5, len(items)]
 
-    neuralNetwork = NeuralNetwork.NeuralNetwork(layersSize=layersSize, modelName="models/model/")
+    neuralNetwork = NeuralNetwork.NeuralNetwork(layersSize=layersSize, modelName="models/" + modelName + "/")
     neuralNetwork.creatNeuralNetwork()
     neuralNetwork.creatingWeights()
     neuralNetwork.addingOutputNeuronsName(items)
@@ -63,7 +68,7 @@ def training(items):
     while True:
         for info in infos:
 
-            inputToTrain = calculatingInput(info)
+            inputToTrain = calculatingInput(info, imgWidth, imgHeight)
             neuralNetwork.addingInput(inputValues=inputToTrain[0], result=inputToTrain[1])
             neuralNetwork.calculatingValuesOfNeurons()
             neuralNetwork.calculatingError()
@@ -73,6 +78,5 @@ def training(items):
 
 
 if __name__ == '__main__':
-    items = readingInputFromXML("labelmap.xml")
-    training(items)
+    training()
 
