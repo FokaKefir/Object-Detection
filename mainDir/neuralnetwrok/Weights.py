@@ -1,81 +1,111 @@
-import sqlite3
-from sqlite3 import Error
+import json
+
+modelDir = "model/"
+weightsFileName = "weights.json"
+
 
 class Weights:
 
     # region 1. Init
 
-    def __init__(self, databaseName):
-        self.__databaseName = databaseName
+    def __init__(self):
+        pass
 
     # endregion
 
+    # region 2. Create json file
 
-    # region 2. Create Table
+    def createJsonFile(self):
+        with open(modelDir + weightsFileName, 'w') as jsonFile:
+            json.dump([], jsonFile)
 
-    def createTable(self, conn):
-        cursor = conn.cursor()
+    # endregion
 
+    # region 3. Insert to the json file
+
+    def insertToJsonFile(self, nId1, nId2, weight=0):
+        newWeight = {
+            'nId1': nId1,
+            'nId2': nId2,
+            'weight': weight
+        }
+        weights = self.getWeights()
+        weights.append(newWeight)
+        self.setWeights(weights=weights)
+
+    # endregion
+
+    # region 4. Getters values from json file
+
+    def getWeights(self):
         try:
-            cursor.execute('''CREATE TABLE weights 
-            (nId1 int, nId2 int, weight double)''')
-        except Error as error:
-            print(error)
+            with open(modelDir + weightsFileName, 'r') as jsonFile:
+                weights = json.load(jsonFile)
+        except:
+            weights = []
+            print("Cannot open the file")
+        return weights
+
+    def getWeightByTwoNeuronId(self, nId1, nId2):
+        weights = self.getWeights()
+        first = 0
+        last = len(weights) - 1
+        index = 0
+        while True:
+            mid = int((first + last) / 2)
+            if weights[mid]['nId2'] == nId2:
+                index = mid
+                break
+            elif weights[mid]['nId2'] > nId2:
+                last = mid - 1
+            else:
+                first = mid + 1
+
+        if weights[index]['nId1'] != nId1:
+            while weights[index]['nId1'] > nId1:
+                index -= 1
+
+            while weights[index]['nId1'] < nId1:
+                index += 1
+
+        return weights[index]['weight']
+
+
+    def getNumberOfWeights(self):
+        weights = self.getWeights()
+        return len(weights)
 
     # endregion
 
-    # region 3. Insert to the table
+    # region 5. Update values at the json file
 
-    def insertToTheTable(self, conn, nId1, nId2, weight=0):
-        cursor = conn.cursor()
+    def setWeightByTwoNeuronId(self, nId1, nId2, newWeight):
+        weights = self.getWeights()
+        first = 0
+        last = len(weights) - 1
+        index = 0
+        while True:
+            mid = int((first + last) / 2)
+            if weights[mid]['nId2'] == nId2:
+                index = mid
+                break
+            elif weights[mid]['nId2'] > nId2:
+                last = mid - 1
+            else:
+                first = mid + 1
 
-        newRow = (nId1, nId2, weight)
+        if weights[index]['nId1'] != nId1:
+            while weights[index]['nId1'] > nId1:
+                index -= 1
 
-        cursor.execute("INSERT INTO weights VALUES (?, ?, ?)", newRow)
+            while weights[index]['nId1'] < nId1:
+                index += 1
 
-        conn.commit()
+        weights[index]['weight'] = newWeight
+        self.setWeights(weights=weights)
 
-    # endregion
-
-    # region 4. Getters values from table
-
-    def getWeightByTwoNeuronId(self, conn, nId1, nId2):
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT weight FROM weights WHERE nId1=" + str(nId1) + " AND nId2=" + str(nId2))
-
-        weight = cursor.fetchone()
-
-        return float(weight[0])
-
-
-    def getRowsSize(self, conn):
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT * FROM weights")
-
-        return len(cursor.fetchall())
-
-    # endregion
-
-    # region 5. Update values at the table
-
-    def setWeightByTwoNeuronId(self, conn, nId1, nId2, newWeight):
-        cursor = conn.cursor()
-
-        cursor.execute("UPDATE weights SET weight=" + str(newWeight) + " WHERE nId1=" + str(nId1) + " AND nId2=" + str(nId2))
-
-        conn.commit()
+    def setWeights(self, weights):
+        with open(modelDir + weightsFileName, 'w') as jsonFile:
+            json.dump(weights, jsonFile, indent=4, sort_keys=True)
 
     # endregion
-
-    # region 6. Delete table
-
-    def deleteTable(self, conn):
-        cursor = conn.cursor()
-
-        cursor.execute("DROP TABLE weights")
-
-        conn.commit()
-
-# endregion

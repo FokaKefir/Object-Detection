@@ -36,10 +36,7 @@ class NeuralNetwork:
         else:
             self.__biases = biases
 
-        print(self.__layersSize)
-
-        # TODO changing the saves of weights to json file
-        # self.__weights = Weights.Weights(databaseName)
+        self.__weights = Weights.Weights()
 
     # endregion
 
@@ -58,9 +55,8 @@ class NeuralNetwork:
             id = newNeuronLayer.getActuallyId()
 
     def creatingWeights(self):
-
-        self.__weights.createTable(self.__conn)
-        if self.__weights.getRowsSize(self.__conn) == 0:
+        if self.__weights.getNumberOfWeights() == 0:
+            self.__weights.createJsonFile()
             self.addingWeights()
             print("The values is saved in database")
 
@@ -71,7 +67,7 @@ class NeuralNetwork:
     def addingWeightBetweenTwoNeuron(self, nId1, nId2, weight):
         id1 = min(nId1, nId2)
         id2 = max(nId1, nId2)
-        self.__weights.insertToTheTable(self.__conn, id1, id2, weight)
+        self.__weights.insertToJsonFile(id1, id2, weight)
 
     def addingWeightsBetweenTwoLayer(self, layer1, layer2):
         neurons1 = layer1.getNeurons()
@@ -215,82 +211,31 @@ class NeuralNetwork:
         id1 = min(nId1, nId2)
         id2 = max(nId1, nId2)
 
-        return float(self.__weights.getWeightByTwoNeuronId(self.__conn, id1, id2))
+        return float(self.__weights.getWeightByTwoNeuronId(id1, id2))
 
     def setWeightBetweenTwoNeuron(self, nId1, nId2, newWeight):
         id1 = min(nId1, nId2)
         id2 = max(nId1, nId2)
-        self.__weights.setWeightByTwoNeuronId(self.__conn, id1, id2, newWeight)
+        self.__weights.setWeightByTwoNeuronId(id1, id2, newWeight)
 
 
     # endregion
 
-    # region 10. Database methods
-
-    def getTableSize(self):
-        cursor = self.__conn.cursor()
-        try:
-            cursor.execute("SELECT * FROM layers")
-            return len(cursor.fetchall())
-
-        except Error as error:
-            return 0
-
-    def saveToTable(self, layersSize):
-        cursor = self.__conn.cursor()
-        index = 0
-        for layerSize in layersSize:
-            newRow = (index, layerSize)
-            cursor.execute("INSERT INTO layers VALUES (?, ?)", newRow)
-            self.__conn.commit()
-            index += 1
-
-    def readFromTable(self):
-        if self.getTableSize() == 0:
-            print("Error: the table is empty")
-            return
-
-        cursor = self.__conn.cursor()
-
-        cursor.execute("SELECT * FROM layers")
-
-        layers = cursor.fetchall()
-        self.__numberOfLayers = len(layers)
-
-        self.__layersSize = [0] * self.__numberOfLayers
-        for layer in layers:
-            id = layer[0]
-            layerSize = layer[1]
-            self.__layersSize[id] = layerSize
-
-    def createTheTable(self):
-        cursor = self.__conn.cursor()
-        try:
-            cursor.execute('''CREATE TABLE layers (id int, size int)''')
-        except Error as error:
-            print(error)
-
-    def closeConnection(self):
-        self.__conn.close()
-
-    # endregion
-
-    # region 11. Json file methods
+    # region 10. Json file methods
 
     def getNumberOfLayers(self):
         try:
             layers = self.getLayersFromJson()
             return len(layers)
-        except json.JSONDecodeError as error:
-            print(error)
+        except:
             return 0
 
     def getLayersFromJson(self):
         try:
             with open(modelDir + layersFileName, 'r') as jsonFile:
                 layers = json.load(jsonFile)
-        except json.JSONDecodeError as error:
-            print(error)
+        except :
+            print("Cannot open the file")
             layers = []
 
         return layers
@@ -324,7 +269,7 @@ class NeuralNetwork:
 
     # endregion
 
-    # region 12. Prints
+    # region 11. Prints
 
     def printError(self):
         print(self.__totalError)
@@ -334,4 +279,5 @@ class NeuralNetwork:
         for neuron in neurons:
             print(neuron.getName(), neuron.getValue())
         print()
+
     # endregion
