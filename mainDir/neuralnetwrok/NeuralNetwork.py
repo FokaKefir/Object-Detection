@@ -4,7 +4,7 @@ import random
 from mainDir.neuralnetwrok import NeuronLayer
 from mainDir.neuralnetwrok import Weights
 
-learningRate = 0.5
+learningRate = 0.10
 
 layersFileName = "layers.json"
 
@@ -292,10 +292,13 @@ class NeuralNetwork:
 
     # region 11. Prints
 
+    def printError(self):
+        print("Total error: " + str(self.__totalError * 100))
+
     def printLoss(self, numberOfErrors=1):
         self.calculatingLoss(numberOfErrors=numberOfErrors)
         print("Loss: " + str(self.__loss * 100) + "%")
-        self.clearLoss()
+        self.__loss = 0
 
     def printNameAndValue(self):
         neurons = self.getLayerByIndex(self.__numberOfLayers-1).getNeurons()

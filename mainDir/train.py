@@ -73,6 +73,7 @@ def training():
             neuralNetwork.calculatingValuesOfNeurons()
             neuralNetwork.calculatingError()
             neuralNetwork.backPropagation()
+            #neuralNetwork.printError()
         neuralNetwork.printLoss(len(infos))
         #neuralNetwork.printNameAndValue()
 
