@@ -53,7 +53,7 @@ def training(items):
     inputLayer = imgHeight * imgWidth
     layersSize = [inputLayer, 5, 5, 5, len(items)]
 
-    neuralNetwork = NeuralNetwork.NeuralNetwork(layersSize=layersSize)
+    neuralNetwork = NeuralNetwork.NeuralNetwork(layersSize=layersSize, modelName="models/model/")
     neuralNetwork.creatNeuralNetwork()
     neuralNetwork.creatingWeights()
     neuralNetwork.addingOutputNeuronsName(items)
@@ -68,8 +68,8 @@ def training(items):
             neuralNetwork.calculatingValuesOfNeurons()
             neuralNetwork.calculatingError()
             neuralNetwork.backPropagation()
-            neuralNetwork.printError()
-            neuralNetwork.printNameAndValue()
+        neuralNetwork.printLoss(len(infos))
+        #neuralNetwork.printNameAndValue()
 
 
 if __name__ == '__main__':

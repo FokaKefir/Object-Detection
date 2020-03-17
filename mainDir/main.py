@@ -6,15 +6,16 @@ def training(neuralNetwork):
         neuralNetwork.addingInput([0.05, 0.1], "true")
         neuralNetwork.calculatingValuesOfNeurons()
         neuralNetwork.calculatingError()
-        neuralNetwork.printNameAndValue()
         neuralNetwork.backPropagation()
+        neuralNetwork.printLoss()
+        neuralNetwork.printNameAndValue()
 
         time.sleep(0.1)
 
 def main():
-    numberOfLayers = 3
+
     layersSize = [2, 2, 2]
-    neuralNetwork = NeuralNetwork.NeuralNetwork(layersSize=layersSize)
+    neuralNetwork = NeuralNetwork.NeuralNetwork(layersSize=layersSize, modelName="models/test_model/")
     neuralNetwork.creatNeuralNetwork()
     neuralNetwork.creatingWeights()
     neuralNetwork.addingOutputNeuronsName(["false", "true"])

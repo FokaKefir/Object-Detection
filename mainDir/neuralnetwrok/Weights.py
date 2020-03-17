@@ -1,6 +1,6 @@
 import json
 
-modelDir = "model/"
+
 weightsFileName = "weights.json"
 
 
@@ -8,7 +8,8 @@ class Weights:
 
     # region 1. Init
 
-    def __init__(self):
+    def __init__(self, modelName="model/"):
+        self.__modelName = modelName
         self.__weights = []
         self.__indexes = [[]]
 
@@ -17,7 +18,7 @@ class Weights:
     # region 2. Create json file
 
     def createJsonFile(self):
-        with open(modelDir + weightsFileName, 'w') as jsonFile:
+        with open(self.__modelName + weightsFileName, 'w') as jsonFile:
             json.dump([], jsonFile)
 
     # endregion
@@ -41,7 +42,7 @@ class Weights:
 
     def getWeights(self):
         try:
-            with open(modelDir + weightsFileName, 'r') as jsonFile:
+            with open(self.__modelName + weightsFileName, 'r') as jsonFile:
                 weights = json.load(jsonFile)
         except:
             weights = []
@@ -63,7 +64,6 @@ class Weights:
     # region 5. Update values at the json file
 
     def setWeightByTwoNeuronId(self, nId1, nId2, newWeight):
-        self.__weights = self.getWeights()
         index = self.getIndexFromIdes(nId1, nId2)
 
         self.__weights[index]['weight'] = newWeight
@@ -72,7 +72,7 @@ class Weights:
         self.setWeights(self.__weights)
 
     def setWeights(self, weights):
-        with open(modelDir + weightsFileName, 'w') as jsonFile:
+        with open(self.__modelName + weightsFileName, 'w') as jsonFile:
             json.dump(weights, jsonFile, indent=4, sort_keys=True)
 
     # endregion

@@ -3,12 +3,9 @@ from math import e
 import random
 from mainDir.neuralnetwrok import NeuronLayer
 from mainDir.neuralnetwrok import Weights
-import sqlite3
-from sqlite3 import Error
 
-learningRate = 0.35
+learningRate = 0.5
 
-modelDir = "model/"
 layersFileName = "layers.json"
 
 
@@ -16,7 +13,10 @@ class NeuralNetwork:
 
     # region 1. Init Object
 
-    def __init__(self, numberOfLayers=None, layersSize=None, biases=None):
+    def __init__(self, numberOfLayers=None, layersSize=None, biases=None, modelName="model/"):
+
+        self.__modelName = modelName
+        self.__loss = 0
 
         if numberOfLayers is None:
             if layersSize is None:
@@ -37,7 +37,7 @@ class NeuralNetwork:
         else:
             self.__biases = biases
 
-        self.__weights = Weights.Weights()
+        self.__weights = Weights.Weights(modelName=self.__modelName)
 
     # endregion
 
@@ -152,7 +152,13 @@ class NeuralNetwork:
             error = ((target - neuron.getValue()) ** 2)/2
             totalError += error
         self.__totalError = totalError
+        self.__loss += totalError
 
+    def calculatingLoss(self, numberOfErrors):
+        self.__loss = self.__loss / numberOfErrors
+
+    def clearLoss(self):
+        self.loss = 0
 
     # endregion
 
@@ -249,7 +255,7 @@ class NeuralNetwork:
 
     def getLayersFromJson(self):
         try:
-            with open(modelDir + layersFileName, 'r') as jsonFile:
+            with open(self.__modelName + layersFileName, 'r') as jsonFile:
                 layers = json.load(jsonFile)
         except :
             print("Cannot open the file")
@@ -281,20 +287,22 @@ class NeuralNetwork:
             }
             layers.append(newLayer)
 
-        with open(modelDir + layersFileName, 'w') as jsonFile:
+        with open(self.__modelName + layersFileName, 'w') as jsonFile:
             json.dump(layers, jsonFile, indent=4, sort_keys=True)
 
     # endregion
 
     # region 11. Prints
 
-    def printError(self):
-        print(self.__totalError)
+    def printLoss(self, numberOfErrors=1):
+        self.calculatingLoss(numberOfErrors=numberOfErrors)
+        print("Loss: " + str(self.__loss * 100) + "%")
+        self.clearLoss()
 
     def printNameAndValue(self):
         neurons = self.getLayerByIndex(self.__numberOfLayers-1).getNeurons()
         for neuron in neurons:
-            print(neuron.getName(), neuron.getValue())
+            print(neuron.getName(), neuron.getValue() * 100, end='%\n')
         print()
 
     # endregion

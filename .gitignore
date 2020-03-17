@@ -1,4 +1,5 @@
 .idea
 mainDir/databases
 mainDir/images
-mainDir/model
+mainDir/models/model
+mainDir/models/test_model
