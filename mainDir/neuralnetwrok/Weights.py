@@ -9,7 +9,7 @@ class Weights:
     # region 1. Init
 
     def __init__(self):
-        pass
+        self.__weights = []
 
     # endregion
 
@@ -23,15 +23,13 @@ class Weights:
 
     # region 3. Insert to the json file
 
-    def insertToJsonFile(self, nId1, nId2, weight=0):
+    def insertToList(self, nId1, nId2, weight=0):
         newWeight = {
             'nId1': nId1,
             'nId2': nId2,
             'weight': weight
         }
-        weights = self.getWeights()
-        weights.append(newWeight)
-        self.setWeights(weights=weights)
+        self.__weights.append(newWeight)
 
     # endregion
 
@@ -70,7 +68,6 @@ class Weights:
 
         return weights[index]['weight']
 
-
     def getNumberOfWeights(self):
         weights = self.getWeights()
         return len(weights)
@@ -103,6 +100,9 @@ class Weights:
 
         weights[index]['weight'] = newWeight
         self.setWeights(weights=weights)
+
+    def saveAllWeights(self):
+        self.setWeights(self.__weights)
 
     def setWeights(self, weights):
         with open(modelDir + weightsFileName, 'w') as jsonFile:

@@ -3,8 +3,8 @@ import csv
 import xml.etree.ElementTree as ET
 import cv2
 from mainDir.picture import Picture
-imgWidth = 25
-imgHeight = 25
+imgWidth = 50
+imgHeight = 50
 
 def readingInputFromXML(name):
     items = []
@@ -47,13 +47,14 @@ def calculatingInput(info):
 
 def training(items):
     inputLayer = imgHeight * imgWidth
-    layersSize = [inputLayer, 3, 8, 8, 8, len(items)]
-    infos = getInformationsFromCSV()
+    layersSize = [inputLayer, 10, 10, 10, 10, len(items)]
 
     neuralNetwork = NeuralNetwork.NeuralNetwork(layersSize=layersSize)
     neuralNetwork.creatNeuralNetwork()
     neuralNetwork.creatingWeights()
     neuralNetwork.addingOutputNeuronsName(items)
+
+    infos = getInformationsFromCSV()
 
     while True:
         for info in infos:

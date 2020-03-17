@@ -58,6 +58,7 @@ class NeuralNetwork:
         if self.__weights.getNumberOfWeights() == 0:
             self.__weights.createJsonFile()
             self.addingWeights()
+            self.__weights.saveAllWeights()
             print("The values is saved in database")
 
     # endregion
@@ -67,7 +68,7 @@ class NeuralNetwork:
     def addingWeightBetweenTwoNeuron(self, nId1, nId2, weight):
         id1 = min(nId1, nId2)
         id2 = max(nId1, nId2)
-        self.__weights.insertToJsonFile(id1, id2, weight)
+        self.__weights.insertToList(id1, id2, weight)
 
     def addingWeightsBetweenTwoLayer(self, layer1, layer2):
         neurons1 = layer1.getNeurons()
