@@ -64,6 +64,7 @@ def training(items):
             neuralNetwork.calculatingError()
             neuralNetwork.backPropagation()
 
+        neuralNetwork.printError()
         neuralNetwork.printNameAndValue()
 
 if __name__ == '__main__':

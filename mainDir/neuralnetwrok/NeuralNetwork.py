@@ -1,3 +1,4 @@
+import json
 from math import e
 import random
 from mainDir.neuralnetwrok import NeuronLayer
@@ -6,19 +7,19 @@ import sqlite3
 from sqlite3 import Error
 
 learningRate = 0.25
-databaseName = "NNdb.db"
-directory = "databases/"
+
+modelDir = "model/"
+layersFileName = "layers.json"
+
 class NeuralNetwork:
 
     # region 1. Init Object
 
     def __init__(self, numberOfLayers=None, layersSize=None, biases=None):
-        self.__conn = sqlite3.connect(directory + databaseName)
-        self.createTheTable()
 
         if numberOfLayers is None:
             if layersSize is None:
-                self.readFromTable()
+                self.readFromJson()
             else:
                 self.__layersSize = layersSize
                 self.__numberOfLayers = len(layersSize)
@@ -27,16 +28,18 @@ class NeuralNetwork:
             self.__numberOfLayers = numberOfLayers
             self.__layersSize = layersSize
 
-
-        if self.getTableSize() == 0:
-            self.saveToTable(self.__layersSize)
+        if self.getNumberOfLayers() == 0:
+            self.saveToJson(self.__layersSize)
 
         if biases is None:
             self.__biases = [0] * self.__numberOfLayers
         else:
             self.__biases = biases
 
-        self.__weights = Weights.Weights(databaseName)
+        print(self.__layersSize)
+
+        # TODO changing the saves of weights to json file
+        # self.__weights = Weights.Weights(databaseName)
 
     # endregion
 
@@ -222,7 +225,7 @@ class NeuralNetwork:
 
     # endregion
 
-    # region 10. Close the connection to database
+    # region 10. Database methods
 
     def getTableSize(self):
         cursor = self.__conn.cursor()
@@ -260,8 +263,6 @@ class NeuralNetwork:
             layerSize = layer[1]
             self.__layersSize[id] = layerSize
 
-
-
     def createTheTable(self):
         cursor = self.__conn.cursor()
         try:
@@ -274,7 +275,56 @@ class NeuralNetwork:
 
     # endregion
 
-    # region 10. Prints
+    # region 11. Json file methods
+
+    def getNumberOfLayers(self):
+        try:
+            layers = self.getLayersFromJson()
+            return len(layers)
+        except json.JSONDecodeError as error:
+            print(error)
+            return 0
+
+    def getLayersFromJson(self):
+        try:
+            with open(modelDir + layersFileName, 'r') as jsonFile:
+                layers = json.load(jsonFile)
+        except json.JSONDecodeError as error:
+            print(error)
+            layers = []
+
+        return layers
+
+    def readFromJson(self):
+        self.__numberOfLayers = None
+        self.__layersSize = []
+
+        layers = self.getLayersFromJson()
+        self.__numberOfLayers = len(layers)
+        self.__layersSize = [0] * self.__numberOfLayers
+
+        for layer in layers:
+            index = layer['index']
+            layerSize = layer['size']
+            self.__layersSize[index] = layerSize
+
+
+
+    def saveToJson(self, layersSize):
+        layers = []
+        for i in range(len(layersSize)):
+            newLayer = {
+                'index': i,
+                'size': layersSize[i]
+            }
+            layers.append(newLayer)
+
+        with open(modelDir + layersFileName, 'w') as jsonFile:
+            json.dump(layers, jsonFile, indent=4, sort_keys=True)
+
+    # endregion
+
+    # region 12. Prints
 
     def printError(self):
         print(self.__totalError)
