@@ -6,10 +6,11 @@ from mainDir.neuralnetwrok import Weights
 import sqlite3
 from sqlite3 import Error
 
-learningRate = 0.25
+learningRate = 0.35
 
 modelDir = "model/"
 layersFileName = "layers.json"
+
 
 class NeuralNetwork:
 
@@ -59,7 +60,12 @@ class NeuralNetwork:
             self.__weights.createJsonFile()
             self.addingWeights()
             self.__weights.saveAllWeights()
+            self.__weights.buildIndexMatrix(self.getLayersSizeSim())
+
             print("The values is saved in database")
+        else:
+            self.__weights.buildIndexMatrix(self.getLayersSizeSim())
+
 
     # endregion
 
@@ -125,6 +131,7 @@ class NeuralNetwork:
             neuronOut.setValue(out)
 
     def calculatingValuesOfNeurons(self):
+        self.__weights.loadWeightsToObject()
         for i in range(self.__numberOfLayers - 1):
             layerIn = self.getLayerByIndex(i)
             layerOut = self.getLayerByIndex(i + 1)
@@ -202,9 +209,18 @@ class NeuralNetwork:
                 condition = True
             self.backPropagationBeetwenTwoLayer(layerOut, layerIn, condition)
 
+        self.__weights.saveAllWeights()
+
     # endregion
 
     # region 9. Getters and Setters
+    def getLayersSizeSim(self):
+        sum = 0
+        for layerSize in self.__layersSize:
+            sum += layerSize
+
+        return sum
+
     def getLayerByIndex(self, index):
         return self.__neuronLayers[index]
 

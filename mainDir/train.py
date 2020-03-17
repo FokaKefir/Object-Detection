@@ -3,8 +3,9 @@ import csv
 import xml.etree.ElementTree as ET
 import cv2
 from mainDir.picture import Picture
-imgWidth = 50
-imgHeight = 50
+imgWidth = 20
+imgHeight = 20
+
 
 def readingInputFromXML(name):
     items = []
@@ -17,6 +18,7 @@ def readingInputFromXML(name):
 
     return items
 
+
 def getInformationsFromCSV():
     info = []
 
@@ -28,6 +30,7 @@ def getInformationsFromCSV():
     info.pop(0)
 
     return info
+
 
 def calculatingInput(info):
     dir = "images/train/"
@@ -45,9 +48,10 @@ def calculatingInput(info):
 
     return (iList, objectName)
 
+
 def training(items):
     inputLayer = imgHeight * imgWidth
-    layersSize = [inputLayer, 10, 10, 10, 10, len(items)]
+    layersSize = [inputLayer, 5, 5, 5, len(items)]
 
     neuralNetwork = NeuralNetwork.NeuralNetwork(layersSize=layersSize)
     neuralNetwork.creatNeuralNetwork()
@@ -64,9 +68,9 @@ def training(items):
             neuralNetwork.calculatingValuesOfNeurons()
             neuralNetwork.calculatingError()
             neuralNetwork.backPropagation()
+            neuralNetwork.printError()
+            neuralNetwork.printNameAndValue()
 
-        neuralNetwork.printError()
-        neuralNetwork.printNameAndValue()
 
 if __name__ == '__main__':
     items = readingInputFromXML("labelmap.xml")
