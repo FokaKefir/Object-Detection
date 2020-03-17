@@ -1,8 +1,11 @@
+import random
 from mainDir.neuralnetwrok import NeuralNetwork
 import csv
 import xml.etree.ElementTree as ET
 import cv2
 from mainDir.picture import Picture
+
+strRun = "True"
 
 
 def readingInputFromXML(name):
@@ -32,7 +35,7 @@ def getInformationsFromCSV():
             info.append(row)
 
     info.pop(0)
-
+    random.shuffle(info)
     return info
 
 
@@ -53,10 +56,27 @@ def calculatingInput(info, imgWidth, imgHeight):
     return (iList, objectName)
 
 
+def setTextOnTxt(strText):
+    try:
+        with open("open.txt", 'w') as file:
+            file.write(strText)
+    except:
+        pass
+
+
+def readTextFromTxt():
+    try:
+        with open("open.txt", 'r') as file:
+            text = file.read()
+    except:
+        text = "Running"
+
+    return str(text)
+
 def training():
     items, modelName, imgHeight, imgWidth = readingInputFromXML("labelmap.xml")
     inputLayer = imgHeight * imgWidth
-    layersSize = [inputLayer, 5, 5, 5, len(items)]
+    layersSize = [inputLayer, 10, 10, 10, len(items)]
 
     neuralNetwork = NeuralNetwork.NeuralNetwork(layersSize=layersSize, modelName="models/" + modelName + "/")
     neuralNetwork.creatNeuralNetwork()
@@ -64,6 +84,9 @@ def training():
     neuralNetwork.addingOutputNeuronsName(items)
 
     infos = getInformationsFromCSV()
+
+    text = "Running"
+    setTextOnTxt(text)
 
     while True:
         for info in infos:
@@ -73,9 +96,14 @@ def training():
             neuralNetwork.calculatingValuesOfNeurons()
             neuralNetwork.calculatingError()
             neuralNetwork.backPropagation()
-            #neuralNetwork.printError()
+            neuralNetwork.printError()
+            text = readTextFromTxt()
+            if text != "Running":
+                break
+        if text != "Running":
+            break
+
         neuralNetwork.printLoss(len(infos))
-        #neuralNetwork.printNameAndValue()
 
 
 if __name__ == '__main__':
