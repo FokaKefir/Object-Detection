@@ -67,7 +67,6 @@ def training():
 
     infos = getInformationsFromCSV()
 
-
     while True:
         for info in infos:
             start = time.time()

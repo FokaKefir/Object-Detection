@@ -104,7 +104,7 @@ class NeuralNetwork:
 
     # region 5. Adding input
 
-    def addingInput(self, inputValues, result):
+    def addingInput(self, inputValues, result=None):
         self.getLayerByIndex(0).addingValuesForNeurons(inputValues)
         self.__result = result
 
@@ -222,6 +222,20 @@ class NeuralNetwork:
             sum += layerSize
 
         return sum
+
+    def getBestResult(self):
+        neuronLayer = self.getLayerByIndex(self.__numberOfLayers - 1)
+        neurons = neuronLayer.getNeurons()
+        outputPercent = 0
+        outputName = ""
+        for neuron in neurons:
+            percent = neuron.getValue()
+
+            if percent > outputPercent:
+                outputPercent = percent
+                outputName = neuron.getName()
+
+        return (outputName, outputPercent)
 
     def getLayerByIndex(self, index):
         return self.__neuronLayers[index]

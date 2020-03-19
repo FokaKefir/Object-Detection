@@ -10,8 +10,8 @@ class Picture:
 
     # region 1. Init Object
 
-    def __init__(self, img, w=None, h=None):
-        self.__img = img
+    def __init__(self, img = None, w=None, h=None):
+        self.__img = cv2.resize(img, IMG_SIZE)
         self.__newImg = img
         self.__width = w
         self.__height = h
@@ -96,11 +96,15 @@ class Picture:
         while len(l):
             actPoz = l.pop(0)
             newMaxi, newMini = self.lookNeight(mat, dim, poz=actPoz, l=l)
-            if newMaxi[0] > maxi[0] or newMaxi[1] > maxi[1]:
-                maxi = newMaxi
+            if newMaxi[0] > maxi[0]:
+                maxi = (newMaxi[0], maxi[1])
+            if newMaxi[1] > maxi[1]:
+                maxi = (maxi[0], newMaxi[1])
 
-            if newMini[0] < mini[0] or newMini[1] < mini[1]:
-                mini = newMini
+            if newMini[0] < mini[0]:
+                mini = (newMini[0], mini[1])
+            if newMini[1] < mini[1]:
+                mini = (mini[0], newMini[1])
 
         return (mini, maxi)
 
@@ -115,9 +119,11 @@ class Picture:
         for i in range(row):
             for j in range(col):
                 if mat[i][j] == 0:
-                    newBox = self.lee(mat, (row, col), (i, j), index)
+                    start, end = newBox = self.lee(mat, (row, col), (i, j), index)
 
-                    self.__boxes.append(newBox)
+                    size = (end[0] - start[0]) * (end[1] - start[1])
+                    if size > (IMG_SIZE[0] * IMG_SIZE[1]) * (5/100):
+                        self.__boxes.append(newBox)
 
                     index += 1
 
@@ -127,15 +133,38 @@ class Picture:
         img = self.resizeImg(img, dim=IMG_SIZE)
 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        ret, thresh = cv2.threshold(img, 170, 255, 0)
+        ret, thresh = cv2.threshold(img, 150, 255, 0)
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        imgContours = cv2.drawContours(img, contours, -1, FRAME, 3)
+        imgContours = cv2.drawContours(img, contours, -1, FRAME, 7)
 
         self.calcObjects(imgContours)
+
+    def rectangleBoxes(self, image=None):
+        if image is None:
+            image = self.__img
+
+        for box in self.__boxes:
+            start, end = box
+            start = (start[1], start[0])
+            end = (end[1], end[0])
+            image = cv2.rectangle(image, start, end, (255, 0, 0), 2)
 
     # endregion
 
     # region 4. Open image
+
+    def showMatrix(self, mat, row, col):
+        img = self.__img
+        for i in range(row):
+            for j in range(col):
+                if mat[i][j] == -1:
+                    img[i][j] = 0
+                else:
+                    img[i][j] = mat[i][j]
+                img[i][j] = img[i][j] * 10
+
+        self.rectangleBoxes(image=img)
+        self.showImg(img)
 
     def showImg(self, img):
         cv2.imshow("Image", img)
