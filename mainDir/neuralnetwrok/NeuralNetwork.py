@@ -4,7 +4,6 @@ import random
 from mainDir.neuralnetwrok import NeuronLayer
 from mainDir.neuralnetwrok import Weights
 
-learningRate = 0.10
 
 layersFileName = "layers.json"
 
@@ -14,6 +13,8 @@ class NeuralNetwork:
     # region 1. Init Object
 
     def __init__(self, numberOfLayers=None, layersSize=None, biases=None, modelName="model/"):
+
+        self.__learningRate = 0.50
 
         self.__modelName = modelName
         self.__loss = 0
@@ -155,9 +156,6 @@ class NeuralNetwork:
     def calculatingLoss(self, numberOfErrors):
         self.__loss = self.__loss / numberOfErrors
 
-    def clearLoss(self):
-        self.loss = 0
-
     # endregion
 
     # region 8. Backward
@@ -165,8 +163,8 @@ class NeuralNetwork:
     def calculatingDerErrorPerOut(self, neuronIn, neuronOut, condition):
         nOutValue = neuronOut.getValue()
 
-        if (condition):
-            if (neuronOut.getName() == self.__result):
+        if condition:
+            if neuronOut.getName() == self.__result:
                 target = 0.99
             else:
                 target = 0.01
@@ -197,10 +195,11 @@ class NeuralNetwork:
 
                 derErrorPerWeight = derErrorPerOut * derOutPerNet * derNetPerWeight
 
-                newWeight = self.getWeightBetweenTwoNeuron(nInId, nOutId) - learningRate * derErrorPerWeight
+                weightBetweenTwoNeuron = self.getWeightBetweenTwoNeuron(nInId, nOutId)
+                newWeight = weightBetweenTwoNeuron - self.__learningRate * derErrorPerWeight
 
                 neuronIn.setDerErrorPerOut(
-                    neuronIn.getDerErrorPerOut() + derErrorPerOut * derOutPerNet * self.getWeightBetweenTwoNeuron(nInId, nOutId))
+                    neuronIn.getDerErrorPerOut() + derErrorPerOut * derOutPerNet * weightBetweenTwoNeuron)
 
                 self.setWeightBetweenTwoNeuron(nInId, nOutId, newWeight)
 
@@ -209,7 +208,7 @@ class NeuralNetwork:
             layerOut = self.__neuronLayers[i]
             layerIn = self.__neuronLayers[i-1]
             condition = False
-            if i == self.__numberOfLayers-1 :
+            if i == self.__numberOfLayers-1:
                 condition = True
             self.backPropagationBeetwenTwoLayer(layerOut, layerIn, condition)
 
@@ -234,12 +233,16 @@ class NeuralNetwork:
 
         return float(self.__weights.getWeightByTwoNeuronId(id1, id2))
 
+    def getTotalError(self):
+        return self.__totalError
+
     def setWeightBetweenTwoNeuron(self, nId1, nId2, newWeight):
         id1 = min(nId1, nId2)
         id2 = max(nId1, nId2)
         self.__weights.setWeightByTwoNeuronId(id1, id2, newWeight)
 
-
+    def setLearningRate(self, value):
+        self.__learningRate = value
     # endregion
 
     # region 10. Json file methods

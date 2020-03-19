@@ -22,7 +22,6 @@ class Picture:
         dim = (w, h)
         self.__newImg = cv2.resize(self.__newImg, dim)
 
-
     def calculatingInput(self):
         inputList = []
 
