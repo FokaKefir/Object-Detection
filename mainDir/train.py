@@ -49,7 +49,7 @@ def calculatingInput(info, imgWidth, imgHeight):
 
     pic = Picture.Picture(img, w, h)
     pic.cropImg(int(info[4]), int(info[5]), int(info[6]), int(info[7]))
-    pic.resizeImg(imgWidth, imgHeight)
+    pic.resizeNewImg(imgWidth, imgHeight)
     iList = pic.calculatingInput()
 
     return (iList, objectName)

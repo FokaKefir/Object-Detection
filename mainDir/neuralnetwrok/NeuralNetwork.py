@@ -65,7 +65,6 @@ class NeuralNetwork:
         else:
             self.__weights.buildIndexMatrix(self.getLayersSizeSim())
 
-
     # endregion
 
     # region 3. Adding weights between Neurons
@@ -175,7 +174,7 @@ class NeuralNetwork:
 
         return derErrorPerOut
 
-    def backPropagationBeetwenTwoLayer(self, layerOut, layerIn, condition):
+    def backPropagationBetweenTwoLayer(self, layerOut, layerIn, condition):
         layerIn.setNeuronsDerErrorPerOut(0)
 
         neuronsOut = layerOut.getNeurons()
@@ -210,7 +209,7 @@ class NeuralNetwork:
             condition = False
             if i == self.__numberOfLayers-1:
                 condition = True
-            self.backPropagationBeetwenTwoLayer(layerOut, layerIn, condition)
+            self.backPropagationBetweenTwoLayer(layerOut, layerIn, condition)
 
         self.__weights.saveAllWeights()
 
