@@ -148,7 +148,7 @@ class NeuralNetwork:
                 target = 0.99
             else:
                 target = 0.01
-            error = ((target - neuron.getValue()) ** 2)/2
+            error = ((target - neuron.getValue()) ** 2)
             totalError += error
         self.__totalError = totalError
         self.__loss += totalError

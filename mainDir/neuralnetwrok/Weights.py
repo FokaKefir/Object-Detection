@@ -42,7 +42,8 @@ class Weights:
 
     def getWeights(self):
         try:
-            with open(self.__modelName + weightsFileName, 'r') as jsonFile:
+            path = self.__modelName + weightsFileName
+            with open(path, 'r') as jsonFile:
                 weights = json.load(jsonFile)
         except:
             weights = []

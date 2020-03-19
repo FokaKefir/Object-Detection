@@ -82,8 +82,10 @@ def training():
             end = time.time()
             print(round(end-start, 3), inputToTrain[1])
             neuralNetwork.printError()
+            neuralNetwork.printNameAndValue()
 
         neuralNetwork.printLoss(len(infos))
+        break
 
 
 if __name__ == '__main__':
