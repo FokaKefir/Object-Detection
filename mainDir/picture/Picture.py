@@ -6,13 +6,21 @@ WALL = -1
 
 IMG_SIZE = (500, 500)
 
+
 class Picture:
 
     # region 1. Init Object
 
-    def __init__(self, img = None, w=None, h=None):
-        self.__img = cv2.resize(img, IMG_SIZE)
-        self.__newImg = img
+    def __init__(self, img=None, w=None, h=None):
+        if img is None:
+            self.__img = None
+        else:
+            self.__img = img
+            try:
+                self.__img = cv2.cvtColor(self.__img, cv2.COLOR_BGR2GRAY)
+            except:
+                pass
+        self.__newImg = [[]]
         self.__width = w
         self.__height = h
 
@@ -23,11 +31,15 @@ class Picture:
     # region 2. Crop the image
 
     def cropImg(self, xmin, ymin, xmax, ymax):
+        self.__newImg = self.__img
         self.__newImg = self.__img[ymin:ymax, xmin:xmax]
 
     def resizeNewImg(self, w, h):
         dim = (w, h)
+
         self.__newImg = cv2.resize(self.__newImg, dim)
+
+        self.showImg(self.__newImg)
 
     def calculatingInput(self):
         inputList = []
@@ -40,17 +52,18 @@ class Picture:
 
         return inputList
 
+    # endregion
+
+    # region 3. Calculating boxes
+
     def resizeImg(self, img, w=None, h=None, dim=None):
         if dim is None:
             dim = (w, h)
         img = cv2.resize(img, dim)
         return img
 
-    # endregion
-
-    # region 3. Calculating boxes
-
     def getBoxes(self):
+        self.__img = cv2.resize(self.__img, IMG_SIZE)
         self.imageFrame()
         return self.__boxes
 
@@ -132,7 +145,6 @@ class Picture:
 
         img = self.resizeImg(img, dim=IMG_SIZE)
 
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         ret, thresh = cv2.threshold(img, 150, 255, 0)
         contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         imgContours = cv2.drawContours(img, contours, -1, FRAME, 7)
