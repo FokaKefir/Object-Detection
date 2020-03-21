@@ -64,6 +64,7 @@ def training():
     neuralNetwork.creatNeuralNetwork()
     neuralNetwork.creatingWeights()
     neuralNetwork.addingOutputNeuronsName(items)
+    neuralNetwork.loadWeights()
 
     infos = getInformationsFromCSV()
 
@@ -85,6 +86,8 @@ def training():
 
         neuralNetwork.printLoss(len(infos))
         break
+
+    neuralNetwork.saveWeights()
 
 
 if __name__ == '__main__':

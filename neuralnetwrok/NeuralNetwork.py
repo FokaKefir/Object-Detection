@@ -129,7 +129,7 @@ class NeuralNetwork:
             neuronOut.setValue(out)
 
     def calculatingValuesOfNeurons(self):
-        self.__weights.loadWeightsToObject()
+
         for i in range(self.__numberOfLayers - 1):
             layerIn = self.getLayerByIndex(i)
             layerOut = self.getLayerByIndex(i + 1)
@@ -210,8 +210,6 @@ class NeuralNetwork:
             if i == self.__numberOfLayers-1:
                 condition = True
             self.backPropagationBetweenTwoLayer(layerOut, layerIn, condition)
-
-        self.__weights.saveAllWeights()
 
     # endregion
 
@@ -305,6 +303,14 @@ class NeuralNetwork:
             json.dump(layers, jsonFile, indent=4, sort_keys=True)
 
     # endregion
+
+    # region 11. Weights methods
+
+    def loadWeights(self):
+        self.__weights.loadWeightsToObject()
+
+    def saveWeights(self):
+        self.__weights.saveAllWeights()
 
     # region 11. Prints
 

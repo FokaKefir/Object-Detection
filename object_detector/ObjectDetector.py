@@ -28,6 +28,7 @@ class ObjectDetector:
         self.__neuralNetwork.creatNeuralNetwork()
         self.__neuralNetwork.creatingWeights()
         self.__neuralNetwork.addingOutputNeuronsName(items)
+        self.__neuralNetwork.loadWeights()
 
         self.__width = imgWidth
         self.__height = imgHeight
