@@ -32,13 +32,13 @@ class Picture:
     def cropImg(self, xmin, ymin, xmax, ymax):
         self.__newImg = self.__img
         self.__newImg = self.__img[ymin:ymax, xmin:xmax]
+        
+        #self.showImg(self.__newImg)
 
     def resizeNewImg(self, w, h):
         dim = (w, h)
 
         self.__newImg = cv2.resize(self.__newImg, dim)
-
-        self.showImg(self.__newImg)
 
     def calculatingInput(self):
         inputList = []
@@ -156,9 +156,10 @@ class Picture:
 
         for box in self.__boxes:
             start, end = box
-            start = (start[1], start[0])
-            end = (end[1], end[0])
+
             image = cv2.rectangle(image, start, end, (255, 0, 0), 2)
+
+        #self.showImg(image)
 
     # endregion
 
@@ -174,7 +175,6 @@ class Picture:
                     img[i][j] = mat[i][j]
                 img[i][j] = img[i][j] * 10
 
-        self.rectangleBoxes(image=img)
         self.showImg(img)
 
     def showImg(self, img):

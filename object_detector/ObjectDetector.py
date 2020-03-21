@@ -95,3 +95,10 @@ class ObjectDetector:
             print(name, precent, box)
     
     # endregion
+
+    # region 7. Show the Image
+
+    def showImage(self):
+        self.__picture.rectangleBoxes()
+
+    # endregion

@@ -9,7 +9,8 @@ def getImage(name):
 if __name__ == '__main__':
     objectDetector = ObjectDetector(labelmap="labelmap.xml")
     objectDetector.setupNeuralNetwork()
-    objectDetector.loadImage(img=getImage("test_banana.jpg"))
+    objectDetector.loadImage(img=getImage("test_pear.jpg"))
     objectDetector.loadBoxes()
     objectDetector.detectingObjects()
     objectDetector.printAll()
+    #objectDetector.showImage()

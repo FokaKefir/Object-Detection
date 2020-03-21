@@ -2,8 +2,8 @@
     <numberOfItems>2</numberOfItems>
     <modelName>model</modelName>
     <image>
-        <width>50</width>
-        <height>50</height>
+        <width>100</width>
+        <height>100</height>
     </image>
     <item>
         <name>banana</name>
